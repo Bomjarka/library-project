@@ -4,7 +4,7 @@
     </x-slot>
     <body>
     <div class="container">
-        <h1 class="my-md-5 my-4">Теги</h1>
+        <h1 class="my-md-5 my-4">Типы</h1>
         <a class="btn btn-primary mb-4" href="#" role="button">Добавить</a>
         <div class="row">
             <div class="col-md-6">

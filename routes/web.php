@@ -22,10 +22,19 @@ Route::get('/', [PageController::class, 'index'])->name('main');
 
 Route::prefix('materials')->group(function () {
     Route::get('/', [MaterialController::class, 'viewMaterials'])->name('viewMaterials');
-    Route::get('/{material}', [MaterialController::class, 'viewMaterial'])->name('viewMaterial');
-
+    Route::get('/create', function () {
+        return view('pages.materials.create-material');
+    })->name('tags');
+    Route::post('/create', [MaterialController::class, 'createMaterial'])->name('createMaterial');
+    Route::post('/find', [MaterialController::class, 'findMaterials'])->name('findMaterials');
+    Route::prefix('{material}')->group(function () {
+        Route::get('/', [MaterialController::class, 'viewMaterial'])->name('viewMaterial');
+        Route::post('/edit', [MaterialController::class, 'editMaterial'])->name('editMaterial');
+        Route::post('/add-link', [MaterialController::class, 'addLink'])->name('addLink');
+        Route::post('/delete-link', [MaterialController::class, 'deleteLink'])->name('deleteLink');
+        Route::post('/delete', [MaterialController::class, 'deleteMaterial'])->name('deleteMaterial');
+    });
 });
-
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'viewCategories'])->name('viewCategories');

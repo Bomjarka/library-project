@@ -6,20 +6,33 @@ use App\Models\Category;
 
 class CategoryService
 {
-    public function createCategory(string $name)
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function createCategory(string $name): void
     {
         Category::create([
             'name' => $name,
         ]);
     }
 
-    public function editCategory(Category $category, string $newName)
+    /**
+     * @param Category $category
+     * @param string $newName
+     * @return void
+     */
+    public function editCategory(Category $category, string $newName): void
     {
         $category->name = $newName;
         $category->save();
     }
 
-    public function deleteCategory(Category $category)
+    /**
+     * @param Category $category
+     * @return void
+     */
+    public function deleteCategory(Category $category): void
     {
         $category->delete();
     }

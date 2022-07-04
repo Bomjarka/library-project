@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Material;
 use App\Models\Type;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class TestComand extends Command
 {
@@ -23,16 +24,8 @@ class TestComand extends Command
     protected $description = 'Command description';
 
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
-
-        $material = Material::first();
-        dd($material->type);
-        return 0;
+        Material::factory()->count(10)->create();
     }
 }

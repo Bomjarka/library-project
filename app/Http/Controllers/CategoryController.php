@@ -5,10 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Services\CategoryService;
 use App\Services\TagService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 
 class CategoryController extends Controller
 {
+    /**
+     * @return Application|Factory|View
+     */
     public function viewCategories()
     {
         $categories = Category::all();
@@ -16,16 +25,28 @@ class CategoryController extends Controller
         return view('pages.categories.categories', ['categories' => $categories]);
     }
 
+    /**
+     * @param Category $category
+     * @return Application|Factory|View
+     */
     public function viewCategory(Category $category)
     {
         return view('pages.categories.view-category', ['category' => $category]);
     }
 
+    /**
+     * @return Application|Factory|View
+     */
     public function newCategory()
     {
         return view('pages.categories.create-category');
     }
 
+    /**
+     * @param Request $request
+     * @param CategoryService $categoryService
+     * @return Application|RedirectResponse|Redirector
+     */
     public function addCategory(Request $request, CategoryService $categoryService)
     {
         $categoryName = $request->get('category-name');
@@ -39,6 +60,12 @@ class CategoryController extends Controller
         return redirect(route('viewCategories'))->withErrors(['message' => 'Such category already exists']);
     }
 
+    /**
+     * @param Category $category
+     * @param Request $request
+     * @param CategoryService $categoryService
+     * @return Application|RedirectResponse|Redirector
+     */
     public function editCategory(Category $category, Request $request, CategoryService $categoryService)
     {
         $categoryName = $request->get('category-name');
@@ -52,12 +79,17 @@ class CategoryController extends Controller
         return redirect(route('viewCategories'))->withErrors(['message' => 'Such category already exists']);
     }
 
-    public function deleteCategory(Category $category, Request $request, CategoryService $categoryService)
+    /**
+     * @param Category $category
+     * @param CategoryService $categoryService
+     * @return JsonResponse
+     */
+    public function deleteCategory(Category $category, CategoryService $categoryService): JsonResponse
     {
-        if ($category) {
-            $categoryService->deleteCategory($category);
-        }
+        $categoryService->deleteCategory($category);
 
-        return redirect(route('viewCategories'));
+        return response()->json([
+            'msg' => 'success',
+        ]);
     }
 }

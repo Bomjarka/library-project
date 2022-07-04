@@ -18,12 +18,12 @@
                         <strong>Название</strong>
                     </li>
                     @foreach($categories as $category)
-{{--                        <input type="hidden" name="category_id" value="{{ $category->id }}">--}}
-                        <li class="list-group-item list-group-item-action d-flex justify-content-between">
+                        <div class="category-div" id="{{ $category->id }}">
+                            <li class="list-group-item list-group-item-action d-flex justify-content-between">
                             <span class="me-3">
                                 {{ $category->name }}
                             </span>
-                            <span class="text-nowrap">
+                                <span class="text-nowrap">
                             <a href="{{ route('viewCategory', $category) }}" class="text-decoration-none me-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                      class="bi bi-pencil" viewBox="0 0 16 16">
@@ -31,7 +31,8 @@
                             d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                     </svg>
                             </a>
-                        <a href="{{ route('viewCategory', $category) }}" class="text-decoration-none">
+                        <a id="{{ $category->id }}" href="#exampleModalToggle"
+                           class="delete-button text-decoration-none" data-bs-toggle="modal" role="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  class="bi bi-trash" viewBox="0 0 16 16">
                                 <path
@@ -41,7 +42,8 @@
                             </svg>
                         </a>
                         </span>
-                        </li>
+                            </li>
+                        </div>
                     @endforeach
                 </ul>
             </div>
@@ -58,3 +60,48 @@
 
     </body>
 </x-app-layout>
+
+<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">Удаление категории</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    Вы уверены, что хотите удалить эту категорию?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input class="category-id-post" type="hidden" value="">
+                <button type="submit" class="delete-category-button btn btn-danger">Да</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Нет</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.delete-button').on('click', function () {
+        let categoryId = $(this).attr('id');
+        $('.category-id-post').val(categoryId);
+
+        $('.delete-category-button').on('click', function () {
+            let url = "{{ route('deleteCategory', ':id') }}";
+            url = url.replace(':id', categoryId)
+            $.post(url, {
+                _token: '{{ csrf_token() }}',
+            }).done(function (response) {
+                console.log(response)
+                if(response.msg == 'success') {
+                    window.location.reload();
+                }
+
+                console.log(response.msg);
+            });
+        });
+
+    });
+</script>

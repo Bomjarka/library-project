@@ -19,7 +19,7 @@ class CreateMaterialsTable extends Migration
             $table->foreignId('category_id')->constrained('categories');
             $table->string('name');
             $table->string('author');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->json('data')->nullable();
             $table->timestamps();
         });

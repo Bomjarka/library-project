@@ -6,7 +6,11 @@ use App\Models\Tag;
 
 class TagService
 {
-    public function createTag($name)
+    /**
+     * @param $name
+     * @return void
+     */
+    public function createTag($name): void
     {
         Tag::create([
            'name' => $name,
