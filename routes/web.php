@@ -31,6 +31,7 @@ Route::prefix('materials')->group(function () {
         Route::get('/', [MaterialController::class, 'viewMaterial'])->name('viewMaterial');
         Route::post('/edit', [MaterialController::class, 'editMaterial'])->name('editMaterial');
         Route::post('/add-link', [MaterialController::class, 'addLink'])->name('addLink');
+        Route::post('/edit-link', [MaterialController::class, 'editLink'])->name('editLink');
         Route::post('/delete-link', [MaterialController::class, 'deleteLink'])->name('deleteLink');
         Route::post('/delete', [MaterialController::class, 'deleteMaterial'])->name('deleteMaterial');
     });

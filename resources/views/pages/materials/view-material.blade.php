@@ -133,7 +133,9 @@
                                     {{ $link['link-description'] ?? $link['link-url'] }}
                                 </a>
                                 <span class="text-nowrap">
-                                    <a href="#" class="text-decoration-none me-2">
+                                    <a id="{{ $link['link-uuid'] }}" data-url="{{ $link['link-url'] }}"
+                                       data-description-link="{{ $link['link-description'] }}" href="#editLinkModal"
+                                       data-bs-toggle="modal" class="edit-link text-decoration-none me-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                              fill="currentColor"
                                              class="bi bi-pencil" viewBox="0 0 16 16">
@@ -141,7 +143,8 @@
                                     d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                             </svg>
                                     </a>
-                                <a id="{{ $link['link-uuid'] }}" href="#removeLinkModal" data-bs-toggle="modal" class="delete-link text-decoration-none">
+                                <a id="{{ $link['link-uuid'] }}" href="#removeLinkModal" data-bs-toggle="modal"
+                                   class="delete-link text-decoration-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                          class="bi bi-trash" viewBox="0 0 16 16">
                                         <path
@@ -232,6 +235,43 @@
         </div>
     </div>
 </div>
+{{-- Редактирование ссылок --}}
+<div class="modal fade" id="editLinkModal" aria-hidden="true" aria-labelledby="editLinkModalToggleLabel"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLinkModalToggleLabel">Редактировать ссылку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    <input name="link-description" type="text" class="link-description-edit form-control"
+                           placeholder="Добавьте описание" value=""
+                           id="floatingModalSignature">
+                    <label for="floatingModalSignature">Подпись</label>
+                    <div class="invalid-feedback">
+                        Пожалуйста, заполните поле
+                    </div>
+
+                </div>
+                <div class="form-floating mb-3">
+                    <input name="link-url" type="text" class="link-url-edit form-control" placeholder="Добавьте ссылку"
+                           id="floatingModalLink" required value="">
+                    <label for="floatingModalLink">Ссылка</label>
+                    <div class="invalid-feedback">
+                        Пожалуйста, заполните поле
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input class="link-uuid-post" type="hidden" value="">
+                <button type="button" class="edit-link-button btn btn-success">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $('.edit-material').on('click', function () {
         $(this).addClass('d-none');
@@ -290,23 +330,50 @@
     });
 
     $('.delete-link').on('click', function () {
-       let linkUUID = $(this).attr('id');
-       $('.link-uuid-post').val(linkUUID);
+        let linkUUID = $(this).attr('id');
+        $('.link-uuid-post').val(linkUUID);
 
 
-       $('.delete-link-button').on('click', function () {
-           let url = "{{ route('deleteLink', $material) }}";
-           $.post(url, {
-               _token: '{{ csrf_token() }}',
-               linkUUID: linkUUID
-           }).done(function (response) {
-               console.log(response)
-               if (response.msg == 'success') {
-                   window.location.reload();
-               }
-               console.log(response.msg);
-           });
-       });
+        $('.delete-link-button').on('click', function () {
+            let url = "{{ route('deleteLink', $material) }}";
+            $.post(url, {
+                _token: '{{ csrf_token() }}',
+                linkUUID: linkUUID
+            }).done(function (response) {
+                console.log(response)
+                if (response.msg == 'success') {
+                    window.location.reload();
+                }
+                console.log(response.msg);
+            });
+        });
+    });
+
+    $('.edit-link').on('click', function () {
+        let linkUUID = $(this).attr('id');
+        let linkURL = $(this).attr('data-url');
+        let linkDesc = $(this).attr('data-description-link')
+
+        $('.link-uuid-post').val(linkUUID);
+        $('.link-description-edit').val(linkDesc);
+        $('.link-url-edit').val(linkURL);
+
+
+        $('.edit-link-button').on('click', function () {
+            let url = "{{ route('editLink', $material) }}";
+            $.post(url, {
+                _token: '{{ csrf_token() }}',
+                linkUUID: linkUUID,
+                linkURL: $('.link-url-edit').val(),
+                linkDesc: $('.link-description-edit').val(),
+            }).done(function (response) {
+                console.log(response)
+                if (response.msg == 'success') {
+                    window.location.reload();
+                }
+                console.log(response.msg);
+            });
+        });
     });
 
     $('.delete-material').on('click', function () {

@@ -146,6 +146,19 @@ class MaterialController extends Controller
 
     }
 
+    public function editLink(Material $material, Request $request, MaterialService $materialService)
+    {
+        $newLinkDescription = $request->get('linkDesc');
+        $newLinkUrl = $request->get('linkUrl');
+        $uuid = $request->get('linkUUID');
+
+        $materialService->editLink($material, ['newLinkDescription' => $newLinkDescription, 'newLinkUrl' => $newLinkUrl, 'uuid' => $uuid]);
+
+        return response()->json([
+            'msg' => 'success',
+        ]);
+    }
+
     /**
      * @param Material $material
      * @param Request $request
