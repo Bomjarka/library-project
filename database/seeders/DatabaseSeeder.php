@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MaterialTags;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,6 +18,8 @@ class DatabaseSeeder extends Seeder
             TypesSeeder::class,
             CategorySeeder::class,
             MaterialsSeeder::class,
+            TagSeeder::class,
+            MaterialTagsSeeder::class,
         ]);
     }
 }
