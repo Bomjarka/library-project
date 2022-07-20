@@ -1,18 +1,18 @@
 <x-app-layout>
     <x-slot name="title">
-        Edit Category
+        Edit Tag
     </x-slot>
     <body>
     <div class="content">
         <div class="container">
-            <h1 class="my-md-5 my-4">{{ $category->name }}</h1>
+            <h1 class="my-md-5 my-4">{{ $tag->name }}</h1>
             <div class="row">
                 <div class="col-lg-5 col-md-8">
-                    <form method="POST" action="{{ route('editCategory', $category) }}">
+                    <form method="POST" action="{{ route('editTag', $tag) }}">
                         @csrf
                         @method('post')
                         <div class="form-floating mb-3">
-                            <input name="category-name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
+                            <input name="tag-name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
                             <label for="floatingName">Новое название</label>
                             <div class="invalid-feedback">
                                 Пожалуйста, заполните поле

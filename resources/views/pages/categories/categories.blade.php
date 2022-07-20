@@ -102,6 +102,5 @@
                 console.log(response.msg);
             });
         });
-
     });
 </script>

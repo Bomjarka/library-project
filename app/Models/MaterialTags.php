@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property string $name
+ * @property int $tag_id
+ * @property int $material_id
  */
-class Category extends Model
+class MaterialTags extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['tag_id', 'material_id'];
 }

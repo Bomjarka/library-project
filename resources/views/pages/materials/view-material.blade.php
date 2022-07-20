@@ -6,13 +6,6 @@
     <div class="container">
         <div class="d-flex flex-row justify-content-between">
             <h1 class="my-md-5 my-4">{{ $material->name }}</h1>
-            <div>
-                <button class="edit-material my-md-5 my-4 btn btn-warning" type="button">Редактировать</button>
-                <button class="delete-material my-md-5 my-4 btn btn-danger" type="button">Удалить</button>
-                <button class="save-material-changes my-md-5 my-4 btn btn-success d-none" type="button">Сохранить
-                </button>
-                <button class="save-material-cancel my-md-5 my-4 btn btn-danger d-none" type="button">Отмена</button>
-            </div>
         </div>
         <div class="material-data row mb-3">
             <div class="col-lg-6 col-md-8">
@@ -34,87 +27,43 @@
                 </div>
             </div>
         </div>
-        <div class="material-data-edit row mb-3 d-none">
-            <div class="col-lg-6 col-md-8">
-                <div class="d-flex text-break">
-                    <p class="col fw-bold mw-25 mw-sm-30 me-2">Название</p>
-                    <input class="new-name" name="new-authors" value="{{ $material->name }}">
-                </div>
-                <div class="d-flex text-break">
-                    <p class="col fw-bold mw-25 mw-sm-30 me-2">Авторы</p>
-                    <input class="new-authors" name="new-authors" value="{{ $material->author }}">
-                </div>
-                <div class="d-flex text-break">
-                    <p class="col fw-bold mw-25 mw-sm-30 me-2">Тип</p>
-                    <select class="select-type form-select col mw-25 mw-sm-30" id="floatingSelectType" required>
-                        <option disabled selected value="{{ $material->type->id }}">{{ $material->type->name }}</option>
-                        @foreach(\App\Models\Type::all() as $type)
-                            <option value="{{ $type->id }}">{{ $type->name }}</option>
-                        @endforeach
-                    </select>
-                    <input class="material-type-input" name="material-type" type="text" hidden
-                           value="{{ $material->type->id }}">
-                </div>
-                <div class="d-flex text-break">
-                    <p class="col fw-bold mw-25 mw-sm-30 me-2">Категория</p>
-                    <select class="select-category form-select col mw-25 mw-sm-30" id="floatingSelectCategory" required>
-                        <option disabled selected
-                                value="{{ $material->category->id }}">{{ $material->category->name }}</option>
-                        @foreach(\App\Models\Category::all() as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    <input class="material-category-input" name="material-category" type="text" hidden
-                           value="{{ $material->category->id }}">
-                </div>
-                <div class="d-flex text-break">
-                    <p class="col fw-bold mw-25 mw-sm-30 me-2">Описание</p>
-                    <input class="new-description" name="new-description" value="{{ $material->description }}">
-                </div>
-            </div>
-        </div>
         <div class="row">
             <div class="col-md-6">
                 <form>
                     <h3>Теги</h3>
                     <div class="input-group mb-3">
-                        <select class="form-select" id="selectAddTag" aria-label="Добавьте автора">
-                            <option selected>Тег1</option>
-                            <option value="1">Тег2</option>
-                            <option value="2">Тег3</option>
-                            <option value="3">Тег4</option>
+                        <select class="select-tag-for-material form-select" id="selectAddTag" required
+                                aria-label="Добавьте тег">
+                            <option disabled selected value="">Выберите тег</option>
+                            @foreach(\App\Models\Tag::whereNotIn('id', $material->tags()->pluck('id'))->get() as $tag)
+                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                            @endforeach
                         </select>
-                        <button class="btn btn-primary" type="button">Добавить</button>
+                        <button class="add-material-tag-button btn btn-primary" type="button">Добавить</button>
                     </div>
                 </form>
                 <ul class="list-group mb-4">
-                    <li class="list-group-item list-group-item-action d-flex justify-content-between">
-                        <a href="#" class="me-3">
-                            Продуктивность
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-trash" viewBox="0 0 16 16">
-                                <path
-                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                <path fill-rule="evenodd"
-                                      d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                            </svg>
-                        </a></li>
-                    <li class="list-group-item list-group-item-action d-flex justify-content-between">
-                        <a href="#" class="me-3">
-                            Личная эффективность
-                        </a>
-                        <a href="#" class="text-decoration-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-trash" viewBox="0 0 16 16">
-                                <path
-                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                <path fill-rule="evenodd"
-                                      d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                            </svg>
-                        </a>
-                    </li>
+                    @if($material->tags()->isEmpty())
+                        <h3>No tags</h3>
+                    @else
+                        @foreach($material->tags() as $tag)
+                            <li class="list-group-item list-group-item-action d-flex justify-content-between">
+                                <a href="#" class="me-3">
+                                    {{ $tag->name }}
+                                </a>
+                                <a id="{{ $tag->id }}" href="#removeTagModal" data-bs-toggle="modal"
+                                   class="delete-tag text-decoration-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd"
+                                              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </a>
+                            </li>
+                        @endforeach
+                    @endif
                 </ul>
             </div>
             <div class="col-md-6">
@@ -157,7 +106,6 @@
                             </li>
                         @endforeach
                     @endif
-
                 </ul>
             </div>
         </div>
@@ -268,6 +216,28 @@
             <div class="modal-footer">
                 <input class="link-uuid-post" type="hidden" value="">
                 <button type="button" class="edit-link-button btn btn-success">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- Удаление тегов --}}
+<div class="modal fade" id="removeTagModal" aria-hidden="true" aria-labelledby="removeTagModalToggleLabel"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeTagModalToggleLabel">Удаление тега</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-floating mb-3">
+                    Вы уверены, что хотите удалить этот тег?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input class="tag-id-post" type="hidden" value="">
+                <button type="submit" class="delete-tag-button btn btn-danger">Да</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Нет</button>
             </div>
         </div>
     </div>
@@ -387,5 +357,50 @@
             }
             console.log(response.msg);
         });
+    });
+
+    $('.delete-tag').on('click', function () {
+        let tagId = $(this).attr('id');
+        $('.tag-id-post').val(tagId);
+
+
+        $('.delete-tag-button').on('click', function () {
+            let url = "{{ route('deleteMaterialTag', $material) }}";
+            $.post(url, {
+                _token: '{{ csrf_token() }}',
+                tagId: tagId
+            }).done(function (response) {
+                console.log(response)
+                if (response.msg == 'success') {
+                    window.location.reload();
+                }
+                console.log(response.msg);
+            });
+        });
+    });
+
+    let tagId = '';
+
+    $('.select-tag-for-material').change(function () {
+        tagId = $(this).val();
+        console.log(tagId);
+    });
+
+    $('.add-material-tag-button').on('click', function () {
+        let url = "{{ route('addMaterialTag', $material) }}";
+        if (tagId == '') {
+            alert('Вы не выбрали тег');
+        } else {
+            $.post(url, {
+                _token: '{{ csrf_token() }}',
+                tagId: tagId
+            }).done(function (response) {
+                console.log(response)
+                if (response.msg == 'success') {
+                    window.location.reload();
+                }
+                console.log(response.msg);
+            });
+        }
     });
 </script>

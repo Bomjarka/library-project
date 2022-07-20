@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Material;
+use App\Models\MaterialTags;
+use App\Models\Tag;
 use App\Models\Type;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
@@ -26,6 +28,9 @@ class TestComand extends Command
 
     public function handle()
     {
-        Material::factory()->count(10)->create();
+
+       $material = Material::find(1);
+       $tags = Tag::whereNotIn('id', $material->tags()->pluck('id'))->get();
+       dd($tags);
     }
 }

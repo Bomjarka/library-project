@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Material;
+use App\Models\MaterialTags;
+use App\Models\Tag;
 use App\Models\Type;
 use App\Services\MaterialService;
 use Illuminate\Contracts\Foundation\Application;
@@ -71,9 +73,21 @@ class MaterialController extends Controller
     {
         $needle = $request->get('needle');
 
+        if ($needle === null) {
+            return view('pages.materials.materials', ['materials' => Material::all(), 'oldNeedle' => $needle]);
+        }
+
+        $categories = Category::where('name', 'ILIKE', '%' . $needle . '%')->get();
+        $types = Type::where('name', 'ILIKE', '%' . $needle . '%')->get();
+        $tags = Tag::where('name', 'ILIKE', '%' . $needle . '%')->get();
+        $materialTags = MaterialTags::whereIn('tag_id', $tags->pluck('id'))->get();
+
         $foundMaterials = Material::where('name', 'ILIKE', '%' . $needle . '%')
             ->orWhere('author', 'ilike', '%' . $needle . '%')
             ->orWhere('description', 'ilike', '%' . $needle . '%')
+            ->orWhereIn('category_id', $categories->pluck('id'))
+            ->orWhereIn('type_id', $types->pluck('id'))
+            ->orWhereIn('id', $materialTags->pluck('material_id'))
             ->get();
 
         if ($foundMaterials->isNotEmpty()) {
@@ -91,7 +105,7 @@ class MaterialController extends Controller
      */
     public function editMaterial(Material $material, Request $request, MaterialService $materialService)
     {
-        $newName = $request->get('newName') ;
+        $newName = $request->get('newName');
         $newAuthors = $request->get('newAuthors');
         $newType = Type::find($request->get('newType'));
         $newCategory = Category::find($request->get('newCategory'));
@@ -110,8 +124,17 @@ class MaterialController extends Controller
         }
 
         return redirect()->back()->withErrors(['message' => 'Something wrong']);
+    }
 
-
+    /**
+     * @param Material $material
+     * @param Request $request
+     * @param MaterialService $materialService
+     * @return JsonResponse|RedirectResponse
+     */
+    public function editMaterialPage(Material $material)
+    {
+        return view('pages.materials.edit-material', ['material' => $material]);
     }
 
     /**
@@ -173,5 +196,50 @@ class MaterialController extends Controller
         return response()->json([
             'msg' => 'success',
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Material $material
+     * @return JsonResponse
+     */
+    public function deleteMaterialTag(Request $request, Material $material): JsonResponse
+    {
+        $tag = Tag::find((int)$request->get('tagId'));
+
+        if ($tag) {
+            $materialTag = MaterialTags::whereMaterialId($material->id)
+                ->whereTagId($tag->id)
+                ->first();
+
+            $materialTag->delete();
+
+            return response()->json([
+                'msg' => 'success',
+            ]);
+        }
+        return response()->json([
+            'msg' => 'error',
+        ]);
+    }
+
+    public function addMaterialTag(Request $request, Material $material)
+    {
+        $tag = Tag::find((int)$request->get('tagId'));
+
+        if ($tag && !MaterialTags::whereMaterialId($material->id)
+                ->whereTagId($tag->id)
+                ->first()) {
+            MaterialTags::create([
+                'material_id' => $material->id,
+                'tag_id' => $tag->id
+            ]);
+
+            return response()->json([
+                'msg' => 'success',
+            ]);
+        }
+
+        return response()->json(['msg' => 'error',]);
     }
 }
