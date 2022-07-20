@@ -82,13 +82,18 @@ class MaterialController extends Controller
         $tags = Tag::where('name', 'ILIKE', '%' . $needle . '%')->get();
         $materialTags = MaterialTags::whereIn('tag_id', $tags->pluck('id'))->get();
 
-        $foundMaterials = Material::where('name', 'ILIKE', '%' . $needle . '%')
-            ->orWhere('author', 'ilike', '%' . $needle . '%')
-            ->orWhere('description', 'ilike', '%' . $needle . '%')
-            ->orWhereIn('category_id', $categories->pluck('id'))
-            ->orWhereIn('type_id', $types->pluck('id'))
-            ->orWhereIn('id', $materialTags->pluck('material_id'))
-            ->get();
+        if ($request->get('byTag') && $request->get('byTag') === true) {
+            $foundMaterials = Material::whereIn('id', $materialTags->pluck('material_id'))
+                ->get();
+        } else {
+            $foundMaterials = Material::where('name', 'ILIKE', '%' . $needle . '%')
+                ->orWhere('author', 'ilike', '%' . $needle . '%')
+                ->orWhere('description', 'ilike', '%' . $needle . '%')
+                ->orWhereIn('category_id', $categories->pluck('id'))
+                ->orWhereIn('type_id', $types->pluck('id'))
+                ->orWhereIn('id', $materialTags->pluck('material_id'))
+                ->get();
+        }
 
         if ($foundMaterials->isNotEmpty()) {
             return view('pages.materials.materials', ['materials' => $foundMaterials, 'oldNeedle' => $needle]);
