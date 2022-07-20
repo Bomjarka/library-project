@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -49,15 +50,17 @@ class CategoryController extends Controller
      */
     public function addCategory(Request $request, CategoryService $categoryService)
     {
-        $categoryName = $request->get('category-name');
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255', 'unique:categories'],
+        ]);
 
-        if ($categoryName && !Category::whereName($categoryName)->first()) {
-            $categoryService->createCategory($categoryName);
-
-            return redirect(route('viewCategories'));
+        if ($validator->fails()) {
+            return redirect(route('viewCategories'))->withErrors(['message' => $validator->getMessageBag()->all()]);
         }
 
-        return redirect(route('viewCategories'))->withErrors(['message' => 'Such category already exists']);
+        $categoryService->createCategory($request->get('name'));
+
+        return redirect(route('viewCategories'));
     }
 
     /**
@@ -68,15 +71,19 @@ class CategoryController extends Controller
      */
     public function editCategory(Category $category, Request $request, CategoryService $categoryService)
     {
-        $categoryName = $request->get('category-name');
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255', 'unique:categories'],
+        ]);
 
-        if ($categoryName && !Category::whereName($categoryName)->first()) {
-            $categoryService->editCategory($category, $categoryName);
-
-            return redirect(route('viewCategories'));
+        if ($validator->fails()) {
+            return redirect(route('viewCategories'))->withErrors(['message' => $validator->getMessageBag()->all()]);
         }
 
-        return redirect(route('viewCategories'))->withErrors(['message' => 'Such category already exists']);
+        $categoryService->editCategory($category, $request->get('name'));
+
+        return redirect(route('viewCategories'));
+
+
     }
 
     /**

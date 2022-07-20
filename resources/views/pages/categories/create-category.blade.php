@@ -12,7 +12,7 @@
                         @csrf
                         @method('post')
                         <div class="form-floating mb-3">
-                            <input name="category-name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
+                            <input name="name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
                             <label for="floatingName">Название</label>
                             <div class="invalid-feedback">
                                 Пожалуйста, заполните поле

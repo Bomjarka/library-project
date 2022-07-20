@@ -6,6 +6,11 @@
     <div class="container">
         <div class="d-flex flex-row justify-content-between">
             <h1 class="my-md-5 my-4">{{ $material->name }}</h1>
+            @if($errors->any())
+                @foreach($errors->all() as $error)
+                    <h1 class="text-danger">{{ $error }}</h1>
+                @endforeach
+            @endif
         </div>
         <div class="material-data row mb-3">
             <div class="col-lg-6 col-md-8">
@@ -353,6 +358,8 @@
                 console.log(response)
                 if (response.msg == 'success') {
                     window.location.reload();
+                } else {
+                    alert(response.msg);
                 }
                 console.log(response.msg);
             });
