@@ -48,9 +48,22 @@
                     @else
                         @foreach($material->tags() as $tag)
                             <li class="list-group-item list-group-item-action d-flex justify-content-between">
-                                <a href="#" class="me-3">
-                                    {{ $tag->name }}
-                                </a>
+                                <form id="{{ $tag->id }}" method="POST" action="{{ route('findMaterials') }}">
+                                    @csrf
+                                    @method('POST')
+                                    <input name="byTag" value="true" hidden>
+                                    <input name="needle" value="{{ $tag->name }}" hidden>
+                                    <button style="background: none!important;
+                                              border: none;
+                                              padding: 0!important;
+                                              /*input has OS specific font-family*/
+                                              color: #4285F4;
+                                              text-decoration: underline;
+                                              cursor: pointer;">
+                                        {{ $tag->name }}
+                                    </button>
+                                </form>
+
                                 <a id="{{ $tag->id }}" href="#removeTagModal" data-bs-toggle="modal"
                                    class="delete-tag text-decoration-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
