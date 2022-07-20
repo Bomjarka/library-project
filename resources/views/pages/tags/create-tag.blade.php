@@ -6,13 +6,18 @@
     <div class="content">
         <div class="container">
             <h1 class="my-md-5 my-4">Добавить тег</h1>
+            @if($errors->any())
+                @foreach($errors->all() as $error)
+                    <h1 class="text-danger">{{ $error }}</h1>
+                @endforeach
+            @endif
             <div class="row">
                 <div class="col-lg-5 col-md-8">
                     <form method="POST" action="{{ route('addTag') }}">
                         @csrf
                         @method('post')
                         <div class="form-floating mb-3">
-                            <input name="tag-name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
+                            <input name="name" type="text" class="form-control" placeholder="Напишите название" id="floatingName" required>
                             <label for="floatingName">Название</label>
                             <div class="invalid-feedback">
                                 Пожалуйста, заполните поле

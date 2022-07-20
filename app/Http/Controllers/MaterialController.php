@@ -14,6 +14,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use function GuzzleHttp\Promise\all;
 
 class MaterialController extends Controller
 {
@@ -44,6 +46,18 @@ class MaterialController extends Controller
      */
     public function createMaterial(Request $request, MaterialService $materialService)
     {
+        $validator = Validator::make($request->all(), [
+            'material-category' => ['required', 'int'],
+            'material-type' => ['required', 'int'],
+            'material-name' => ['required', 'string', 'max:255'],
+            'material-author' => ['required', 'string', 'max:255'],
+            'material-description' => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect(route('viewMaterials'))->withErrors(['message' => $validator->getMessageBag()->all()]);
+        }
+
         $category = Category::find($request->get('material-category'));
         $type = Type::find($request->get('material-type'));
         $materialName = $request->get('material-name');
@@ -71,6 +85,13 @@ class MaterialController extends Controller
      */
     public function findMaterials(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'needle' => ['nullable', 'string']
+        ]);
+
+        if ($validator->fails()) {
+            return redirect(route('viewMaterials'))->withErrors(['message' => $validator->getMessageBag()->all()]);
+        }
         $needle = $request->get('needle');
 
         if ($needle === null) {
@@ -99,7 +120,7 @@ class MaterialController extends Controller
             return view('pages.materials.materials', ['materials' => $foundMaterials, 'oldNeedle' => $needle]);
         }
 
-        return redirect()->back()->withErrors(['message' => 'Materials not found']);
+        return redirect()->route('viewMaterials')->withErrors(['message' => 'Materials not found']);
     }
 
     /**
@@ -110,6 +131,18 @@ class MaterialController extends Controller
      */
     public function editMaterial(Material $material, Request $request, MaterialService $materialService)
     {
+        $validator = Validator::make($request->all(), [
+            'newCategory' => ['required', 'int'],
+            'newType' => ['required', 'int'],
+            'newName' => ['required', 'string', 'max:255'],
+            'newAuthors' => ['required', 'string', 'max:255'],
+            'newDescription' => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect(route('viewMaterials'))->withErrors(['message' => $validator->getMessageBag()->all()]);
+        }
+
         $newName = $request->get('newName');
         $newAuthors = $request->get('newAuthors');
         $newType = Type::find($request->get('newType'));
@@ -133,9 +166,7 @@ class MaterialController extends Controller
 
     /**
      * @param Material $material
-     * @param Request $request
-     * @param MaterialService $materialService
-     * @return JsonResponse|RedirectResponse
+     * @return Application|Factory|View
      */
     public function editMaterialPage(Material $material)
     {
@@ -165,6 +196,15 @@ class MaterialController extends Controller
      */
     public function addLink(Material $material, Request $request, MaterialService $materialService): RedirectResponse
     {
+        $validator = Validator::make($request->all(), [
+            'link-description' => ['nullable', 'string', 'max:255'],
+            'link-url' => ['required', 'url'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors(['message' => $validator->getMessageBag()->all()]);
+        }
+
         $linkDescription = $request->get('link-description');
         $linkUrl = $request->get('link-url');
 
@@ -174,10 +214,27 @@ class MaterialController extends Controller
 
     }
 
-    public function editLink(Material $material, Request $request, MaterialService $materialService)
+    /**
+     * @param Material $material
+     * @param Request $request
+     * @param MaterialService $materialService
+     * @return JsonResponse
+     */
+    public function editLink(Material $material, Request $request, MaterialService $materialService): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'linkDesc' => ['nullable', 'string', 'max:255'],
+            'linkURL' => ['required', 'url'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'msg' => $validator->getMessageBag()->all(),
+            ]);
+        }
+
         $newLinkDescription = $request->get('linkDesc');
-        $newLinkUrl = $request->get('linkUrl');
+        $newLinkUrl = $request->get('linkURL');
         $uuid = $request->get('linkUUID');
 
         $materialService->editLink($material, ['newLinkDescription' => $newLinkDescription, 'newLinkUrl' => $newLinkUrl, 'uuid' => $uuid]);
@@ -228,8 +285,22 @@ class MaterialController extends Controller
         ]);
     }
 
-    public function addMaterialTag(Request $request, Material $material)
+    /**
+     * @param Request $request
+     * @param Material $material
+     * @return JsonResponse
+     */
+    public function addMaterialTag(Request $request, Material $material): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'tagId' => ['required', 'int'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'msg' => $validator->getMessageBag()->all(),
+            ]);
+        }
         $tag = Tag::find((int)$request->get('tagId'));
 
         if ($tag && !MaterialTags::whereMaterialId($material->id)

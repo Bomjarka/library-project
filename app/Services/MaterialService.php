@@ -73,20 +73,23 @@ class MaterialService
         $material->save();
     }
 
-    public function editLink(Material $material, array $data)
+    /**
+     * @param Material $material
+     * @param array $data
+     * @return void
+     */
+    public function editLink(Material $material, array $data): void
     {
         $links = $material->links();
         $materialData = json_decode($material->data,1);
-
 
         foreach ($links as $key => $link) {
             if ($link['link-uuid'] != $data['uuid']) {
                 continue;
             }
-
             array_splice($links, $key, 1);
             $link['link-description'] = $data['newLinkDescription'];
-            $link['link-utl'] = $data['newLinkUrl'];
+            $link['link-url'] = $data['newLinkUrl'];
             $link['link-uuid'] = $data['uuid'];
             $links[] = $link;
         }

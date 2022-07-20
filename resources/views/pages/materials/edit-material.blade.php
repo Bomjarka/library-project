@@ -16,11 +16,11 @@
             <div class="col-lg-6 col-md-8">
                 <div class="d-flex text-break">
                     <p class="col fw-bold mw-25 mw-sm-30 me-2">Название</p>
-                    <input class="new-name" name="new-authors" value="{{ $material->name }}">
+                    <input class="new-name" name="new-authors" value="{{ $material->name }}" required>
                 </div>
                 <div class="d-flex text-break">
                     <p class="col fw-bold mw-25 mw-sm-30 me-2">Авторы</p>
-                    <input class="new-authors" name="new-authors" value="{{ $material->author }}">
+                    <input class="new-authors" name="new-authors" value="{{ $material->author }}" required>
                 </div>
                 <div class="d-flex text-break">
                     <p class="col fw-bold mw-25 mw-sm-30 me-2">Тип</p>
@@ -81,7 +81,14 @@
     });
 
     $('.save-material-changes').on('click', function () {
+
+        if ($('.new-name').val() == '') {
+            alert('Name field is required!');
+        }
         let newName = $('.new-name').val();
+        if ($('.new-authors').val() == '') {
+            alert('Author field is required!');
+        }
         let newAuthors = $('.new-authors').val();
         let newType = $('.material-type-input').val();
         let newCategory = $('.material-category-input').val();

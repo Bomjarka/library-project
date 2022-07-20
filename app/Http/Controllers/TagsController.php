@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Validator;
 
 class TagsController extends Controller
 {
@@ -49,15 +50,17 @@ class TagsController extends Controller
      */
     public function addTag(Request $request, TagService $tagService)
     {
-        $tagName = $request->get('tag-name');
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255', 'unique:tags'],
+        ]);
 
-        if ($tagName && !Tag::whereName($tagName)->first()) {
-            $tagService->createTag($tagName);
-
-            return redirect(route('viewTags'));
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors(['message' => $validator->getMessageBag()->all()]);
         }
 
-        return redirect(route('viewTags'))->withErrors(['message' => 'Such tag already exists']);
+        $tagService->createTag($request->get('name'));
+
+        return redirect(route('viewTags'));
     }
 
     /**
@@ -68,15 +71,17 @@ class TagsController extends Controller
      */
     public function editTag(Tag $tag, Request $request, TagService $tagService)
     {
-        $tagName = $request->get('tag-name');
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255', 'unique:tags'],
+        ]);
 
-        if ($tagName && !Tag::whereName($tagName)->first()) {
-            $tagService->editTag($tag, $tagName);
-
-            return redirect(route('viewTags'));
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors(['message' => $validator->getMessageBag()->all()]);
         }
 
-        return redirect(route('viewTags'))->withErrors(['message' => 'Such tag already exists']);
+        $tagService->editTag($tag, $request->get('name'));
+
+        return redirect(route('viewTags'));
     }
 
     /**
